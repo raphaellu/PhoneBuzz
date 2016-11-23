@@ -23,10 +23,21 @@
       <br>
 
       <div class="description">
-        <p>PhoneBuzz is almost ready. Simply enter your phone number in form of +1XXXXXXXXXX.</p>
+        <p>PhoneBuzz is almost ready. <br><br> (1) Simply enter your phone number in form of +1XXXXXXXXXX <br><br> (2) Schedule a call in any time you want! (leave time slots blank for immediate call.)</p>
       </div>
       <div class="input">
-        <input type="text" class="button" id="phoneNum" name="phoneNum" placeholder="+1XXXXXXXXXX" maxlength="12" autofocus> 
+        <input type="text" class="button textbox" id="phoneNum" name="phoneNum" placeholder="+1XXXXXXXXXX" maxlength="12" autofocus> 
+      </div>
+      <br>
+
+      <div class="input">
+        <input type="number" class="button textbox" id="hours" name="hours" placeholder="hour(s)" maxlength="2" > 
+        <input type="number" class="button textbox" id="minutes" name="minutes" placeholder="minute(s)" maxlength="2" > 
+        <input type="number" class="button textbox" id="seconds" name="seconds" placeholder="second(s)" maxlength="2" > 
+      </div>
+      <br>
+
+      <div class="input">  
         <input type="submit" class="button" id="submit" value="MAKE A CALL">
       </div>
       

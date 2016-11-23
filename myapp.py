@@ -13,20 +13,30 @@ twilio_signature = 'RSOYDt4T1cUTdK1PDd93/VVr8B8='
 
 app = Flask(__name__)
 
+
+# below is for phase 3:
 @app.route('/')
 def index():
     return render_template('index.html')
 
+
+
+
+# below is for phase 2:
 @app.route('/outbound_call', methods=['GET','POST'])
 def outbound_call():
     num = validateNum(request.form['phoneNum']);
+    hours = request.form['hours'];
+    minutes = request.form['minutes'];
+
     # if num is not valid, raise error msg
     if (num == -1):
         return render_template('index.html', status=-1, message="Please enter a valid number : +1XXXXXXXXXX")
     call = client.calls.create(to=num, 
                            from_="+12565308617", 
                            url=mysite+"phonebuzz")
-    return render_template('index.html', status=1, message="A call to "+num + " has been sent ...")
+    return render_template('index.html', status=1, message="A call to "+num + " has been sent.")
+
 
 # validate if a phone number is valid
 def validateNum(str):
@@ -40,6 +50,7 @@ def validateNum(str):
     else:
         return -1
 
+# below is for phase 1 
 
 @app.route('/phonebuzz', methods=['GET','POST'])
 def phoneBuzz():
