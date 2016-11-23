@@ -16,8 +16,6 @@ twilio_signature = 'RSOYDt4T1cUTdK1PDd93/VVr8B8='
 app = Flask(__name__)
 
 curr_call = Call('test', 0, 0, 'test') # create new Call entry
-all_calls = Call.query.all() # a list of all history calls
-
 # below is for phase 2 & 3:
 @app.route('/')
 def index():
@@ -90,6 +88,8 @@ def handle_input():
         else: 
             resp.say(", ".join(res) + ",,,,Game finished. Goodbye!")
             curr_call.number = int(nm)
+            while(curr_call.phone == ''):
+                pass
             db.session.add(curr_call) # add curr call into database
             db.session.commit()
             curr_call = Call('test', 0, 0, 'test')
