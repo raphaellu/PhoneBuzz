@@ -10,7 +10,7 @@ account_sid = "AC603bdae185464326b59f75982befc9c5" # Your Account SID from www.t
 auth_token  = "65a6f6eb6b11237fbdb9c073b8ea4b99"  # Your Auth Token from www.twilio.com/console
 client = TwilioRestClient(account_sid, auth_token)
 validator = RequestValidator(auth_token)
-mysite = "http://phonebuzz-phase3-lelu.herokuapp.com/" # phase 1 site to handle phoneBuzz call
+mysite = "http://phonebuzz-phase4-lelu.herokuapp.com/" # phase 1 site to handle phoneBuzz call
 # The X-Twilio-Signature header attached to the request
 twilio_signature = 'RSOYDt4T1cUTdK1PDd93/VVr8B8='
 app = Flask(__name__)
