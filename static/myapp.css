@@ -1,3 +1,8 @@
+#scheduled_info {
+  display: none;
+}
+
+
 .background {
 	background: #f7f7f7;
 }
@@ -48,7 +53,7 @@ form {
 }
 
 
-#submit {
+.submit_button {
   width: 100%;
   height: 46px;
   background: #E86C8D;
@@ -65,8 +70,15 @@ form {
 #submit:hover {
   background: #d45d7d;
 }
-  
 
+#submit_2:disabled {
+  background: #d6d6d6;
+  cursor: not-allowed; 
+}  
+
+#submit_2 {
+  display:none;
+}
 input:focus {
   outline: none;
   outline: 2px solid #E86C8D;

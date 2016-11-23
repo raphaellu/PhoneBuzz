@@ -31,29 +31,33 @@
       <br>
 
       <div class="input">
-        <input type="number" class="button textbox" id="hours" name="hours" placeholder="hour(s)" maxlength="2" > 
-        <input type="number" class="button textbox" id="minutes" name="minutes" placeholder="minute(s)" maxlength="2" > 
-        <input type="number" class="button textbox" id="seconds" name="seconds" placeholder="second(s)" maxlength="2" > 
+        <input type="number" class="button textbox" id="hours" name="hours" placeholder="hour(s)" > 
+        <input type="number" class="button textbox" id="minutes" name="minutes" placeholder="minute(s)" > 
+        <input type="number" class="button textbox" id="seconds" name="seconds" placeholder="second(s)"> 
       </div>
       <br>
 
       <div class="input">  
-        <input type="submit" class="button" id="submit" value="MAKE A CALL">
+        <input type="submit" class="button submit_button" id="submit" value="MAKE A CALL">
       </div>
-      
-      <br>
+      <!-- a dummy button that shows up after clicking the real submit button -->
+      <div class="input">
+        <input type="submit" class="button submit_button" id="submit_2" value="MAKE A CALL" disabled>
+      </div>
 
-      {% if status == 1 %}
-		<div class="alert alert-success description">
+      <br>
+    <div class="alert description" id="scheduled_info">
+    </div>
+    {% if status == 1 %}
+		<div class="alert alert-success description status_msg">
   			<strong>Success!</strong> {{message}}
 		</div>
 	  {% elif status == -1 %}
-		<div class="alert alert-danger description">
+		<div class="alert alert-danger description status_msg">
   			<strong>Error!</strong> {{message}}
 		</div>
 	  {% endif %}
 </form>
-
 
 
   
@@ -64,6 +68,11 @@
 	<script src="https://code.jquery.com/jquery-3.1.1.min.js" integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8=" crossorigin="anonymous"></script>
 	<!-- Bootstrap -->
 	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
-
+  <!-- prepare for Flask AJAX call -->
+  <script type=text/javascript>
+    $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
+  </script>
+  <!-- customized js -->
+  <script src="../static/myapp.js"></script>
 </body>
 </html>
