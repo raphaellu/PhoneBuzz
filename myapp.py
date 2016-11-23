@@ -92,6 +92,7 @@ def handle_input():
             curr_call.number = int(nm)
             db.session.add(curr_call) # add curr call into database
             db.session.commit()
+            curr_call = Call('test', 0, 0, 'test')
     else: # if input is invalid, ask for re-entering the num
         resp.say("You did not enter a valid number.")
         resp.redirect("/phonebuzz")
