@@ -21,30 +21,32 @@ all_calls = Call.query.all() # a list of all history calls
 # below is for phase 2 & 3:
 @app.route('/')
 def index():
-    global all_calls
-    return render_template('index.html', all_calls=all_calls)
+    return render_template('index.html', all_calls=Call.query.all())
 
 @app.route('/outbound_call', methods=['GET','POST'])
 def outbound_call():
-    global curr_call, all_calls
+    global curr_call
     num = validate_num(request.form['phoneNum'])
     hours = request.form['hours']
     minutes = request.form['minutes']
     seconds = request.form['seconds']
     # if num is not valid, raise error msg
     if (num == -1):
-        return render_template('index.html', status=-1, message="Please enter a valid number : +1XXXXXXXXXX", all_calls=all_calls)
+        return render_template('index.html', status=-1, message="Please enter a valid number : +1XXXXXXXXXX", all_calls=Call.query.all())
     
     sleep_time = validate_time(hours, minutes, seconds)
-    time.sleep(sleep_time);
-    call = client.calls.create(to=num, 
-                           from_="+12565308617", 
-                           url=mysite+"phonebuzz")
+
     # assign info to current call (preparing for adding into database)
     curr_call.phone = num
     curr_call.delay = int(sleep_time) # sleeping time is definitely an int, validated by HTML5 
     curr_call.time = strftime("%Y-%m-%d %H:%M:%S", localtime())
-    return render_template('index.html', status=1, message="A call to "+num + " has been sent.", all_calls=all_calls)
+
+    time.sleep(sleep_time);
+    call = client.calls.create(to=num, 
+                           from_="+12565308617", 
+                           url=mysite+"phonebuzz")
+
+    return render_template('index.html', status=1, message="A call to "+num + " has been sent.", all_calls=Call.query.all())
 
 # validate sleeping time
 # HTML5 validates numbers and this function converts strings to floats and return in seconds
@@ -77,7 +79,7 @@ def phonebuzz():
 
 @app.route('/handle_input', methods=['GET','POST'])    
 def handle_input():
-    global curr_call, all_calls
+    global curr_call
     nm = request.values.get('Digits', '')
     resp = twilio.twiml.Response()
     if nm.isdigit():  # if input is valid
@@ -90,7 +92,6 @@ def handle_input():
             curr_call.number = int(nm)
             db.session.add(curr_call) # add curr call into database
             db.session.commit()
-            all_calls = Call.query.all() # update the list of all history calls
     else: # if input is invalid, ask for re-entering the num
         resp.say("You did not enter a valid number.")
         resp.redirect("/phonebuzz")
