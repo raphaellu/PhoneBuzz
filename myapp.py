@@ -88,7 +88,7 @@ def handle_input():
         else: 
             resp.say(", ".join(res) + ",,,,Game finished. Goodbye!")
             curr_call.number = int(nm)
-            while(curr_call.phone == ''):
+            while(curr_call.phone == 'test'):
                 pass
             db.session.add(curr_call) # add curr call into database
             db.session.commit()
