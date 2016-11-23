@@ -3,6 +3,8 @@ from twilio.rest import TwilioRestClient
 import twilio.twiml
 from twilio.util import RequestValidator
 import time
+from time import strftime, localtime
+from database import db, Call
 
 account_sid = "AC603bdae185464326b59f75982befc9c5" # Your Account SID from www.twilio.com/console
 auth_token  = "65a6f6eb6b11237fbdb9c073b8ea4b99"  # Your Auth Token from www.twilio.com/console
@@ -11,31 +13,37 @@ validator = RequestValidator(auth_token)
 mysite = "http://phonebuzz-phase1-lelu.herokuapp.com/" # phase 1 site to handle phoneBuzz call
 # The X-Twilio-Signature header attached to the request
 twilio_signature = 'RSOYDt4T1cUTdK1PDd93/VVr8B8='
-
 app = Flask(__name__)
-# outbound_calls = [] # list of scheduled outbound calls
 
-# below is for phase 2:
+curr_call = Call('', 0, 0, '') # create new Call entry
+all_calls = Call.query.all() # a list of all history calls
+
+# below is for phase 2 & 3:
 @app.route('/')
 def index():
-    return render_template('index.html')
+    return render_template('index.html', all_calls=all_calls)
 
 @app.route('/outbound_call', methods=['GET','POST'])
 def outbound_call():
+    global curr_call
     num = validate_num(request.form['phoneNum'])
     hours = request.form['hours']
     minutes = request.form['minutes']
     seconds = request.form['seconds']
     # if num is not valid, raise error msg
     if (num == -1):
-        return render_template('index.html', status=-1, message="Please enter a valid number : +1XXXXXXXXXX")
+        return render_template('index.html', status=-1, message="Please enter a valid number : +1XXXXXXXXXX", all_calls=all_calls)
     
     sleep_time = validate_time(hours, minutes, seconds)
     time.sleep(sleep_time);
     call = client.calls.create(to=num, 
                            from_="+12565308617", 
                            url=mysite+"phonebuzz")
-    return render_template('index.html', status=1, message="A call to "+num + " has been sent.")
+    # assign info to current call (preparing for adding into database)
+    curr_call.phone = num
+    curr_call.delay = int(sleep_time) # sleeping time is definitely an int, validated by HTML5 
+    curr_call.time = strftime("%Y-%m-%d %H:%M:%S", localtime())
+    return render_template('index.html', status=1, message="A call to "+num + " has been sent.", all_calls=all_calls)
 
 # validate sleeping time
 # HTML5 validates numbers and this function converts strings to floats and return in seconds
@@ -68,6 +76,7 @@ def phonebuzz():
 
 @app.route('/handle_input', methods=['GET','POST'])    
 def handle_input():
+    global curr_call
     nm = request.values.get('Digits', '')
     resp = twilio.twiml.Response()
     if nm.isdigit():  # if input is valid
@@ -80,6 +89,10 @@ def handle_input():
     else: # if input is invalid, ask for re-entering the num
         resp.say("You did not enter a valid number.")
         resp.redirect("/phonebuzz")
+    curr_call.number = int(nm)
+    db.session.add(curr_call) # add curr call into database
+    db.session.commit()
+    all_calls = Call.query.all() # update the list of all history calls
     return str(resp)
 
     
