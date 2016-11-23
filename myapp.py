@@ -21,11 +21,12 @@ all_calls = Call.query.all() # a list of all history calls
 # below is for phase 2 & 3:
 @app.route('/')
 def index():
+    global all_calls
     return render_template('index.html', all_calls=all_calls)
 
 @app.route('/outbound_call', methods=['GET','POST'])
 def outbound_call():
-    global curr_call
+    global curr_call, all_calls
     num = validate_num(request.form['phoneNum'])
     hours = request.form['hours']
     minutes = request.form['minutes']
@@ -76,7 +77,7 @@ def phonebuzz():
 
 @app.route('/handle_input', methods=['GET','POST'])    
 def handle_input():
-    global curr_call
+    global curr_call, all_calls
     nm = request.values.get('Digits', '')
     resp = twilio.twiml.Response()
     if nm.isdigit():  # if input is valid
