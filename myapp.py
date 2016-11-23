@@ -15,7 +15,7 @@ mysite = "http://phonebuzz-phase4-lelu.herokuapp.com/" # phase 1 site to handle 
 twilio_signature = 'RSOYDt4T1cUTdK1PDd93/VVr8B8='
 app = Flask(__name__)
 
-curr_call = Call('', 0, 0, '') # create new Call entry
+curr_call = Call('test', 0, 0, 'test') # create new Call entry
 all_calls = Call.query.all() # a list of all history calls
 
 # below is for phase 2 & 3:
@@ -87,13 +87,13 @@ def handle_input():
             resp.redirect("/phonebuzz")
         else: 
             resp.say(", ".join(res) + ",,,,Game finished. Goodbye!")
+            curr_call.number = int(nm)
+            db.session.add(curr_call) # add curr call into database
+            db.session.commit()
+            all_calls = Call.query.all() # update the list of all history calls
     else: # if input is invalid, ask for re-entering the num
         resp.say("You did not enter a valid number.")
         resp.redirect("/phonebuzz")
-    curr_call.number = int(nm)
-    db.session.add(curr_call) # add curr call into database
-    db.session.commit()
-    all_calls = Call.query.all() # update the list of all history calls
     return str(resp)
 
     
