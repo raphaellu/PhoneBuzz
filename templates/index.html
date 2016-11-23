@@ -59,27 +59,7 @@
 	  {% endif %}
 
 
-    <!-- table for all history calls -->
-    <div class="panel panel-default">
-    
-    <div class="panel-heading">History Calls</div>
-
-     <!-- Table -->
-      <table class="table">
-          <th> Call To </th>
-          <th> Game Input </th>
-          <th> Delay (s) </th>
-          <th> Time </th>
-        {% for call in all_calls %}
-          <tr>
-            <td>{{call.phone}}</td>
-            <td>{{call.number}}</td>
-            <td>{{call.delay}}</td>
-            <td>{{call.time}}</td>
-          </tr>
-        {% endfor %}
-      </table>
-    </div>
+   
     
 </form>
 
