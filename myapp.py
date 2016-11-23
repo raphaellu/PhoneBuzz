@@ -14,8 +14,7 @@ mysite = "http://phonebuzz-phase4-lelu.herokuapp.com/" # phase 1 site to handle 
 # The X-Twilio-Signature header attached to the request
 twilio_signature = 'RSOYDt4T1cUTdK1PDd93/VVr8B8='
 app = Flask(__name__)
-
-curr_call = Call('test', 0, 0, 'test') # create new Call entry
+last_delay = 0
 # below is for phase 2 & 3:
 @app.route('/')
 def index():
@@ -23,7 +22,7 @@ def index():
 
 @app.route('/outbound_call', methods=['GET','POST'])
 def outbound_call():
-    global curr_call
+    global last_delay
     num = validate_num(request.form['phoneNum'])
     hours = request.form['hours']
     minutes = request.form['minutes']
@@ -35,9 +34,7 @@ def outbound_call():
     sleep_time = validate_time(hours, minutes, seconds)
 
     # assign info to current call (preparing for adding into database)
-    curr_call.phone = num
-    curr_call.delay = int(sleep_time) # sleeping time is definitely an int, validated by HTML5 
-    curr_call.time = strftime("%Y-%m-%d %H:%M:%S", localtime())
+    last_delay = int(sleep_time) # sleeping time is definitely an int, validated by HTML5 
 
     time.sleep(sleep_time);
     call = client.calls.create(to=num, 
@@ -77,7 +74,7 @@ def phonebuzz():
 
 @app.route('/handle_input', methods=['GET','POST'])    
 def handle_input():
-    global curr_call
+    global last_delay
     nm = request.values.get('Digits', '')
     resp = twilio.twiml.Response()
     if nm.isdigit():  # if input is valid
@@ -87,12 +84,9 @@ def handle_input():
             resp.redirect("/phonebuzz")
         else: 
             resp.say(", ".join(res) + ",,,,Game finished. Goodbye!")
-            curr_call.number = int(nm)
-            while(curr_call.phone == 'test'):
-                pass
+            curr_call = Call(request.values.get('To', 'Unknown'), last_delay, int(nm), strftime("%Y-%m-%d %H:%M:%S", localtime()))
             db.session.add(curr_call) # add curr call into database
             db.session.commit()
-            curr_call = Call('test', 0, 0, 'test')
     else: # if input is invalid, ask for re-entering the num
         resp.say("You did not enter a valid number.")
         resp.redirect("/phonebuzz")
