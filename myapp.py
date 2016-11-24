@@ -110,7 +110,7 @@ def handle_input(delay):
         else: 
             resp.say(", ".join(res) + ",,,,Game finished. Goodbye!")
             # curr_call = Call(request.values.get('To', 'Unknown'), last_delay, int(nm), strftime("%Y-%m-%d %H:%M:%S", localtime()))
-            curr_call = Call(request.values.get('To', 'Unknown'), (int)delay, int(nm), strftime("%Y-%m-%d %H:%M:%S", localtime()))
+            curr_call = Call(request.values.get('To', 'Unknown'), int(delay), int(nm), strftime("%Y-%m-%d %H:%M:%S", localtime()))
             db.session.add(curr_call) # add curr call into database
             db.session.commit()
     else: # if input is invalid, ask for re-entering the num
