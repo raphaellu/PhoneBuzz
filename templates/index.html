@@ -67,16 +67,14 @@
 
      <!-- Table -->
       <table class="table">
-          <th> # </th>
           <th> Call To </th>
           <th> Game Input </th>
           <th> Delay (s) </th>
           <th> Time </th>
           <th></th>
-        {% for call in all_calls %}
+        {% for call in all_calls|reverse %}
         <form action="/redial/{{call.id}}" method="GET">
           <tr>
-            <td>{{call.id}}</td>
             <td>{{call.phone}}</td>
             <td>{{call.number}}</td>
             <td>{{call.delay}}</td>
