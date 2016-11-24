@@ -111,7 +111,7 @@ def handle_input(delay):
         res = generate_phonebuzz(int(nm))
         if (res == -1): # if the number is too large, ask for re-entering the num
             resp.say("You entered a very large number, why don't we try a smaller one ?")
-            resp.redirect("/phonebuzz")
+            resp.redirect("/phonebuzz/"+delay)
         else: 
             resp.say(", ".join(res) + ",,,,Game finished. Goodbye!")
             pst = timezone('US/Pacific')
@@ -121,7 +121,7 @@ def handle_input(delay):
             db.session.commit()
     else: # if input is invalid, ask for re-entering the num
         resp.say("You did not enter a valid number.")
-        resp.redirect("/phonebuzz")
+        resp.redirect("/phonebuzz/"+delay)
     return str(resp)
 
     
