@@ -64,13 +64,13 @@ If you would like to build/run the web application locally, please install the f
 * python 2.7
 * [flask 0.11.1](http://flask.pocoo.org/)
 `pip install Flask`
-* `myapp.py`: change variable  `account_sid`, `auth_token`, `twilio_signature`, `mysite` accordingly depend on your twilio/http server configuration. For phase 2 & 3, in `outbound_call()` change `from_="<number>"` to your twilio number. 
+* `myapp.py`: change variable  `account_sid`, `auth_token`, `twilio_signature`, `mysite` accordingly depending on your twilio/http server configurations. For phase 2 & 3, in function `outbound_call()`, please change `from_="<number>"` to your twilio number. 
 
 ### Phase 4 only
 * [Flask-SQLAlchemy 2.1](http://flask-sqlalchemy.pocoo.org/2.1/) 
 `pip install Flask-SQLAlchemy`
 * `database.py`: change `app.config['SQLALCHEMY_DATABASE_URI']` to `sqlite:///calls.db` for local testing.  `os.environ['HEROKU_POSTGRESQL_CYAN_URL']` is the path to postgreSQL database on heroku server
-* `myapp.py`: along with similar variable changes as phase 1-3, also change `twilio_number` to your twilio number 
+* `myapp.py`: along with similar variable changes as in phase 1-3, please also change `twilio_number` to your twilio number 
 
 In order to serve the web application locally, you also need a local http server. Some options can be [http-server](https://www.npmjs.com/package/http-server), [gunicorn](http://gunicorn.org/), etc.
 
