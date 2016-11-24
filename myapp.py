@@ -29,7 +29,7 @@ def redial(call_id):
     # make a replay call
     call = client.calls.create(to=curr_call.phone, 
                            from_="+12565308617", 
-                           url=mysite+"phonebuzz")
+                           url=mysite+"replay_result/"+str(curr_call.number))
                            # url="http://demo.twilio.com/docs/voice.xml")
                            
     return render_template('index.html', status=1, message="A replay to "+curr_call.phone + " has been sent.", all_calls=Call.query.all())
