@@ -14,7 +14,6 @@ mysite = "http://phonebuzz-phase4-lelu.herokuapp.com/" # phase 1 site to handle 
 # The X-Twilio-Signature header attached to the request
 twilio_signature = 'RSOYDt4T1cUTdK1PDd93/VVr8B8='
 app = Flask(__name__)
-# last_delay = 0
 
 @app.route('/')
 def index():
@@ -24,13 +23,15 @@ def index():
 
 @app.route('/redial/<call_id>',  methods=['GET','POST'])
 def redial(call_id):
+    # if no post request sent (eg. simply refresh the page)
+    if (request.method != 'POST'): return render_template('index.html', all_calls=Call.query.all())
+    
     # query the call from database
     curr_call = Call.query.filter_by(id=call_id).first();
     # make a replay call
     call = client.calls.create(to=curr_call.phone, 
                            from_="+12565308617", 
                            url=mysite+"replay_result/"+str(curr_call.number))
-                           # url="http://demo.twilio.com/docs/voice.xml")
                            
     return render_template('index.html', status=1, message="A replay to "+curr_call.phone + " has been sent.", all_calls=Call.query.all())
 
@@ -47,7 +48,9 @@ def replay_result(number):
 
 @app.route('/outbound_call', methods=['GET','POST'])
 def outbound_call():
-    # global last_delay
+    # if no post request sent (eg. simply refresh the page)
+    if (request.method != 'POST'): return render_template('index.html', all_calls=Call.query.all())
+
     num = validate_num(request.form['phoneNum'])
     hours = request.form['hours']
     minutes = request.form['minutes']
@@ -109,7 +112,6 @@ def handle_input(delay):
             resp.redirect("/phonebuzz")
         else: 
             resp.say(", ".join(res) + ",,,,Game finished. Goodbye!")
-            # curr_call = Call(request.values.get('To', 'Unknown'), last_delay, int(nm), strftime("%Y-%m-%d %H:%M:%S", localtime()))
             curr_call = Call(request.values.get('To', 'Unknown'), int(delay), int(nm), strftime("%Y-%m-%d %H:%M:%S", localtime()))
             db.session.add(curr_call) # add curr call into database
             db.session.commit()
@@ -129,3 +131,5 @@ def generate_phonebuzz(nm):
         elif (i % 3 == 0): res.append("Fizz")
         else : res.append(str(i))    
     return res
+
+

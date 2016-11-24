@@ -22,6 +22,5 @@ $(function() {
       	$('#submit').hide();    // replace the submit button with a disabled submit button 
       	$('#submit_2').show();  // without affecting the http request
       }
-      console.log("end")
     });
   });
