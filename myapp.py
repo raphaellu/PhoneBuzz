@@ -3,7 +3,9 @@ from twilio.rest import TwilioRestClient
 import twilio.twiml
 from twilio.util import RequestValidator
 import time
-from time import strftime, localtime
+import pytz
+from pytz import timezone
+from datetime import datetime
 from database import db, Call
 
 account_sid = "AC603bdae185464326b59f75982befc9c5" 
@@ -112,7 +114,9 @@ def handle_input(delay):
             resp.redirect("/phonebuzz")
         else: 
             resp.say(", ".join(res) + ",,,,Game finished. Goodbye!")
-            curr_call = Call(request.values.get('To', 'Unknown'), int(delay), int(nm), strftime("%Y-%m-%d %H:%M:%S", localtime()))
+            pst = timezone('US/Pacific')
+            curr_time = pst.localize(datetime.now()).strftime('%Y-%m-%d %H:%M:%S');
+            curr_call = Call(request.values.get('To', 'Unknown'), int(delay), int(nm), curr_time)
             db.session.add(curr_call) # add curr call into database
             db.session.commit()
     else: # if input is invalid, ask for re-entering the num
