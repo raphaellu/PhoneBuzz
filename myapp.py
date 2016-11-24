@@ -15,6 +15,7 @@ validator = RequestValidator(auth_token)
 mysite = "http://phonebuzz-phase4-lelu.herokuapp.com/" # phase 1 site to handle phoneBuzz call
 # The X-Twilio-Signature header attached to the request
 twilio_signature = 'RSOYDt4T1cUTdK1PDd93/VVr8B8='
+twilio_number = '+12565308617'
 app = Flask(__name__)
 
 @app.route('/')
@@ -25,6 +26,7 @@ def index():
 
 @app.route('/redial/<call_id>',  methods=['GET','POST'])
 def redial(call_id):
+    global twilio_number
     # if no post request sent (eg. simply refresh the page)
     if (request.method != 'POST'): return render_template('index.html', all_calls=Call.query.all())
 
@@ -32,7 +34,7 @@ def redial(call_id):
     curr_call = Call.query.filter_by(id=call_id).first();
     # make a replay call
     call = client.calls.create(to=curr_call.phone, 
-                           from_="+12565308617", 
+                           from_=twilio_number, 
                            url=mysite+"replay_result/"+str(curr_call.number))
                            
     return render_template('index.html', status=1, message="A replay to "+curr_call.phone + " has been sent.", all_calls=Call.query.all())
@@ -50,6 +52,7 @@ def replay_result(number):
 # below is for phase 2 & 3:
 @app.route('/outbound_call', methods=['GET','POST'])
 def outbound_call():
+    global twilio_number
     # if no post request sent (eg. simply refresh the page)
     if (request.method != 'POST'): return render_template('index.html', all_calls=Call.query.all())
 
@@ -69,7 +72,7 @@ def outbound_call():
 
     time.sleep(sleep_time);
     call = client.calls.create(to=num, 
-                           from_="+12565308617", 
+                           from_=twilio_number, 
                            url=mysite+"phonebuzz/"+str(delay))
 
     return render_template('index.html', status=1, message="A call to "+num + " has been sent.", all_calls=Call.query.all())
