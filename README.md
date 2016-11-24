@@ -8,12 +8,14 @@ A typical round of fizz buzz is as follows: 1, 2, Fizz, 4, Buzz, Fizz, 7, 8, Fiz
 * [Github - Final Source code](https://github.com/raphaellu/PhoneBuzz) 
 
 ## Powered by
-* Twilio
+* Twilio API
 * Flask
 * Heroku
 * Flask-SQLAlchemy
 * PostgreSQL
 
+# How to use: 
+Here is the brief break-down of how to interact with each phase:
 
 ## Phase 1
 For phase 1, you will be able to point a Twilio phone # at my web app and be able to play FizzBuzz via the phone.
@@ -53,4 +55,24 @@ A storage system is added to the application. A history of PhoneBuzz calls made 
 
 * Link to Web Application: [http://phonebuzz-phase4-lelu.herokuapp.com/](http://phonebuzz-phase3-lelu.herokuapp.com/)
 
+# How to build locally:
+If you would like to build/run the web application locally, please install the following dependencies first: (a virtualenv can be very helpful)
 
+### Phase 1-4
+* python 2.7
+* [flask 0.11.1](http://flask.pocoo.org/)
+`pip install Flask`
+* `myapp.py`: change variable `mysite` accordingly depending on your configuration. This variable is used when making a outbound twilio call.
+
+### Phase 4 only
+* [Flask-SQLAlchemy 2.1](http://flask-sqlalchemy.pocoo.org/2.1/) 
+`pip install Flask-SQLAlchemy`
+* `database.py`: change `app.config['SQLALCHEMY_DATABASE_URI']` to `sqlite:///calls.db` for local testing.  `os.environ['HEROKU_POSTGRESQL_CYAN_URL']` is the path to postgreSQL database on heroku server
+
+In order to serve the web application locally, you also need a local http server. Some options can be [http-server](https://www.npmjs.com/package/http-server), [gunicorn](http://gunicorn.org/), etc.
+
+### example using gunicorn:
+```
+pip install gunicorn
+gunicorn myapp:app
+```
