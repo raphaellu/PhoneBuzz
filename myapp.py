@@ -6,8 +6,8 @@ import time
 from time import strftime, localtime
 from database import db, Call
 
-account_sid = "AC603bdae185464326b59f75982befc9c5" # Your Account SID from www.twilio.com/console
-auth_token  = "65a6f6eb6b11237fbdb9c073b8ea4b99"  # Your Auth Token from www.twilio.com/console
+account_sid = "AC603bdae185464326b59f75982befc9c5" 
+auth_token  = "65a6f6eb6b11237fbdb9c073b8ea4b99"  
 client = TwilioRestClient(account_sid, auth_token)
 validator = RequestValidator(auth_token)
 mysite = "http://phonebuzz-phase4-lelu.herokuapp.com/" # phase 1 site to handle phoneBuzz call
@@ -25,7 +25,7 @@ def index():
 def redial(call_id):
     # if no post request sent (eg. simply refresh the page)
     if (request.method != 'POST'): return render_template('index.html', all_calls=Call.query.all())
-    
+
     # query the call from database
     curr_call = Call.query.filter_by(id=call_id).first();
     # make a replay call
@@ -38,6 +38,7 @@ def redial(call_id):
 
 @app.route('/replay_result/<number>',  methods=['GET','POST'])
 def replay_result(number):
+    # replay the result from last call
     resp = twilio.twiml.Response()
     resp.say("Last time you entered " + number + "   and the result was: ")
     res = generate_phonebuzz(int(number))
@@ -45,13 +46,12 @@ def replay_result(number):
     return str(resp)
 
 # below is for phase 2 & 3:
-
 @app.route('/outbound_call', methods=['GET','POST'])
 def outbound_call():
     # if no post request sent (eg. simply refresh the page)
     if (request.method != 'POST'): return render_template('index.html', all_calls=Call.query.all())
 
-    num = validate_num(request.form['phoneNum'])
+    num = validate_phone(request.form['phoneNum'])    # validate phone number
     hours = request.form['hours']
     minutes = request.form['minutes']
     seconds = request.form['seconds']
@@ -59,6 +59,7 @@ def outbound_call():
     if (num == -1):
         return render_template('index.html', status=-1, message="Please enter a valid number : +1XXXXXXXXXX", all_calls=Call.query.all())
     
+    # check if hours, minutes, seconds are all valid numbers
     sleep_time = validate_time(hours, minutes, seconds)
 
     # assign info to current call (preparing for adding into database)
@@ -79,7 +80,7 @@ def validate_time(h, m, s):
     if (s == '' or float(m) < 0): s = 0
     return float( float(h) * 3600 + float(m) * 60 + float(s))
 # validate if a phone number is valid
-def validate_num(str):
+def validate_phone(str):
     # missing country code
     if str[0:2] != '+1' and len(str) == 10:
         return "+1"+str
@@ -102,7 +103,6 @@ def phonebuzz(delay):
 
 @app.route('/handle_input/<delay>', methods=['GET','POST'])    
 def handle_input(delay):
-    # global last_delay
     nm = request.values.get('Digits', '')
     resp = twilio.twiml.Response()
     if nm.isdigit():  # if input is valid
