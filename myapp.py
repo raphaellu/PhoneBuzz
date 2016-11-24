@@ -14,7 +14,7 @@ mysite = "http://phonebuzz-phase4-lelu.herokuapp.com/" # phase 1 site to handle 
 # The X-Twilio-Signature header attached to the request
 twilio_signature = 'RSOYDt4T1cUTdK1PDd93/VVr8B8='
 app = Flask(__name__)
-last_delay = 0
+# last_delay = 0
 
 @app.route('/')
 def index():
@@ -38,7 +38,7 @@ def redial(call_id):
 @app.route('/replay_result/<number>',  methods=['GET','POST'])
 def replay_result(number):
     resp = twilio.twiml.Response()
-    resp.say("Last time you entered " + number + " and the result is: ")
+    resp.say("Last time you entered " + number + "   and the result was: ")
     res = generate_phonebuzz(int(number))
     resp.say(", ".join(res) + ",,,, Replay finished. Goodbye!")
     return str(resp)
@@ -47,7 +47,7 @@ def replay_result(number):
 
 @app.route('/outbound_call', methods=['GET','POST'])
 def outbound_call():
-    global last_delay
+    # global last_delay
     num = validate_num(request.form['phoneNum'])
     hours = request.form['hours']
     minutes = request.form['minutes']
@@ -59,12 +59,12 @@ def outbound_call():
     sleep_time = validate_time(hours, minutes, seconds)
 
     # assign info to current call (preparing for adding into database)
-    last_delay = int(sleep_time) # sleeping time is definitely an int, validated by HTML5 
+    delay = int(sleep_time) # sleeping time is definitely an int, validated by HTML5 
 
     time.sleep(sleep_time);
     call = client.calls.create(to=num, 
                            from_="+12565308617", 
-                           url=mysite+"phonebuzz")
+                           url=mysite+"phonebuzz/"+str(delay))
 
     return render_template('index.html', status=1, message="A call to "+num + " has been sent.", all_calls=Call.query.all())
 
@@ -89,17 +89,17 @@ def validate_num(str):
 
 # below is for phase 1 
 
-@app.route('/phonebuzz', methods=['GET','POST'])
-def phonebuzz():
+@app.route('/phonebuzz/<delay>', methods=['GET','POST'])
+def phonebuzz(delay):
     resp = twilio.twiml.Response()
     # ask user to enter a num for game
-    with resp.gather(action="/handle_input", method="POST", timeout=10) as g:
+    with resp.gather(action="/handle_input/"+delay, method="POST", timeout=10) as g:
         g.say("Please enter a number to start fizz buzz game, followed by the pound sign.")
     return str(resp)
 
-@app.route('/handle_input', methods=['GET','POST'])    
-def handle_input():
-    global last_delay
+@app.route('/handle_input/<delay>', methods=['GET','POST'])    
+def handle_input(delay):
+    # global last_delay
     nm = request.values.get('Digits', '')
     resp = twilio.twiml.Response()
     if nm.isdigit():  # if input is valid
@@ -110,7 +110,7 @@ def handle_input():
         else: 
             resp.say(", ".join(res) + ",,,,Game finished. Goodbye!")
             # curr_call = Call(request.values.get('To', 'Unknown'), last_delay, int(nm), strftime("%Y-%m-%d %H:%M:%S", localtime()))
-            curr_call = Call(request.values.get('To', 'Unknown'), 0, int(nm), strftime("%Y-%m-%d %H:%M:%S", localtime()))
+            curr_call = Call(request.values.get('To', 'Unknown'), (int)delay, int(nm), strftime("%Y-%m-%d %H:%M:%S", localtime()))
             db.session.add(curr_call) # add curr call into database
             db.session.commit()
     else: # if input is invalid, ask for re-entering the num
