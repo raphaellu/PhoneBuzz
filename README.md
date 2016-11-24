@@ -45,7 +45,9 @@ This is powered by the Twilio API.
 
 Similar to the simple FizzBuzz challenge, but with an optional delay to the phone call. User will be able to enter the delay time before requesting a call. 
 
-**Currently it only handles delay that is less than 30s*
+**Currently it only handles delay that is less than 30s due to http request timeout of heroku (max response time limit).*
+
+**Another primitive idea of implementing such a function is to store all delayed calls in a queue and run a standalone script on server side to periodically check (eg. every 10s) if any call is to be executed. However, I did not find any web server supporting minute-wise periodical events for free - please let me know if you find one*
 
 * Link to Web Application: [http://phonebuzz-phase3-lelu.herokuapp.com/](http://phonebuzz-phase3-lelu.herokuapp.com/)
 
