@@ -15,29 +15,35 @@ mysite = "http://phonebuzz-phase4-lelu.herokuapp.com/" # phase 1 site to handle 
 twilio_signature = 'RSOYDt4T1cUTdK1PDd93/VVr8B8='
 app = Flask(__name__)
 last_delay = 0
-# below is for phase 2 & 3:
+
 @app.route('/')
 def index():
     return render_template('index.html', all_calls=Call.query.all())
 
-@app.route('/redial/<call_id>')
+# below is for phase 4:
+
+@app.route('/redial/<call_id>',  methods=['GET','POST'])
 def redial(call_id):
     # query the call from database
     curr_call = Call.query.filter_by(id=call_id).first();
     # make a replay call
     call = client.calls.create(to=curr_call.phone, 
                            from_="+12565308617", 
-                           url=mysite+"replay_result/"+str(curr_call.number))
+                           url=mysite+"phonebuzz")
+                           # url="http://demo.twilio.com/docs/voice.xml")
+                           
     return render_template('index.html', status=1, message="A replay to "+curr_call.phone + " has been sent.", all_calls=Call.query.all())
 
 
-@app.route('/replay_result/<number>')
+@app.route('/replay_result/<number>',  methods=['GET','POST'])
 def replay_result(number):
     resp = twilio.twiml.Response()
     resp.say("Last time you entered " + number + " and the result is: ")
     res = generate_phonebuzz(int(number))
     resp.say(", ".join(res) + ",,,, Replay finished. Goodbye!")
     return str(resp)
+
+# below is for phase 2 & 3:
 
 @app.route('/outbound_call', methods=['GET','POST'])
 def outbound_call():
