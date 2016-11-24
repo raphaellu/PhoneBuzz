@@ -115,7 +115,7 @@ def handle_input(delay):
         else: 
             resp.say(", ".join(res) + ",,,,Game finished. Goodbye!")
             pst = timezone('US/Pacific')
-            curr_time = pst.localize(datetime.now()).strftime('%Y-%m-%d %H:%M:%S');
+            curr_time = (pytz.utc).localize(datetime.utcnow()).astimezone(pst).strftime('%Y-%m-%d %H:%M:%S')
             curr_call = Call(request.values.get('To', 'Unknown'), int(delay), int(nm), curr_time)
             db.session.add(curr_call) # add curr call into database
             db.session.commit()
