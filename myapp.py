@@ -20,6 +20,25 @@ last_delay = 0
 def index():
     return render_template('index.html', all_calls=Call.query.all())
 
+@app.route('/redial/<call_id>')
+def redial(call_id):
+    # query the call from database
+    curr_call = Call.query.filter_by(id=call_id).first();
+    # make a replay call
+    call = client.calls.create(to=curr_call.phone, 
+                           from_="+12565308617", 
+                           url=mysite+"replay_result/"+str(curr_call.number))
+    return render_template('index.html', status=1, message="A replay to "+curr_call.phone + " has been sent.", all_calls=Call.query.all())
+
+
+@app.route('/replay_result/<number>')
+def replay_result(number):
+    resp = twilio.twiml.Response()
+    resp.say("Last time you entered " + number + " and the result is: ")
+    res = generate_phonebuzz(int(number))
+    resp.say(", ".join(res) + ",,,, Replay finished. Goodbye!")
+    return str(resp)
+
 @app.route('/outbound_call', methods=['GET','POST'])
 def outbound_call():
     global last_delay
@@ -84,7 +103,8 @@ def handle_input():
             resp.redirect("/phonebuzz")
         else: 
             resp.say(", ".join(res) + ",,,,Game finished. Goodbye!")
-            curr_call = Call(request.values.get('To', 'Unknown'), last_delay, int(nm), strftime("%Y-%m-%d %H:%M:%S", localtime()))
+            # curr_call = Call(request.values.get('To', 'Unknown'), last_delay, int(nm), strftime("%Y-%m-%d %H:%M:%S", localtime()))
+            curr_call = Call(request.values.get('To', 'Unknown'), 0, int(nm), strftime("%Y-%m-%d %H:%M:%S", localtime()))
             db.session.add(curr_call) # add curr call into database
             db.session.commit()
     else: # if input is invalid, ask for re-entering the num

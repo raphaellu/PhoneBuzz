@@ -23,6 +23,5 @@ $(function() {
       	$('#submit_2').show();  // without affecting the http request
       }
       console.log("end")
-      
     });
   });
